@@ -11,6 +11,7 @@ pe <- ts_combined %>%
     confirmed_diff2 = lead(confirmed_diff) - confirmed_diff
   )
 
+# modelo lineal asumiendo crecimiento exponencial del número de casos confirmados
 logmod1 <- lm(y ~ ts, pe)
 summary(logmod1)
 
@@ -24,3 +25,31 @@ future <- data.frame(
 res <- predict(logmod1, newdata = future)
 future$casos_futuros <- floor(10^res)
 future
+
+# gráfico de modelo y valores:
+ggplot(pe, aes(x = ts, y = y)) +
+  geom_point() +
+  geom_line(aes(y = predict(logmod1)), color = "red") +
+  labs(
+    y = "log10(casos)",
+    x = "",
+    title = "Casos confirmados en Perú (al 2020-03-14)"
+  ) +
+  theme_bw(18)
+ggsave(
+  filename = "casos-peru-modelo-exp.png"
+)
+
+ggplot(pe, aes(x = ts, y = confirmed)) +
+  geom_point() +
+  geom_line(aes(y = 10^predict(logmod1)), color = "red") +
+  labs(
+    y = "Casos",
+    x = "",
+    title = "Casos confirmados en Perú (al 2020-03-14)"
+  ) +
+  theme_bw(18)
+ggsave(
+  filename = "casos-peru-modelo-exp2.png"
+)
+

@@ -2,9 +2,17 @@ library(tidyverse)
 
 ts_combined <- readRDS("data/covid-19_ts_combined.rds")
 
+#Noticia de hace unos minutos: https://rpp.pe/peru/actualidad/coronavirus-en-peru-minuto-a-minuto-43-casos-de-covid-19-y-gobierno-suspende-la-recepcion-de-cruceros-a-puertos-del-pais-live-163
+
 pe <- ts_combined %>%
   filter(iso3c == "PER" & confirmed > 0) %>%
-  select(country_region, iso3c, ts, confirmed, deaths, recovered) %>%
+  select(country_region, iso3c, ts, confirmed) %>%
+  add_row(
+    country_region = "Peru",
+    iso3c = "PER",
+    ts = as.Date("2020-03-15"),
+    confirmed = 71 # noticia de hace unos minutos
+  ) %>%
   mutate(
     y = log10(confirmed),
     confirmed_diff = lead(confirmed) - confirmed,
